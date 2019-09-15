@@ -27,14 +27,25 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-Blog.create({
-    title: "Test Blog",
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80",
-    body: "Hello this is a blog post!"
-})
+// Blog.create({
+//     title: "Test Blog",
+//     image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80",
+//     body: "Hello this is a blog post!"
+// })
 
 app.get("/", (req, res) => {
-    res.send("Hello");
+    res.redirect("/blogs");
+})
+
+app.get("/blogs", (req, res) => {
+    Blog.find({}, (err, blogs) => {
+        if (err) console.log(err);
+        else {
+            res.render("index", {
+                blogs: blogs
+            });
+        }
+    })
 })
 
 app.listen(3000, () => {
