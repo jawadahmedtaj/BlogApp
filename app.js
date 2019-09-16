@@ -1,31 +1,33 @@
-const express = require('express'),
-    bodyParser = require("body-parser"),
-    mongoose = require("mongoose"),
-    app = express();
+const express = require("express"),
+  bodyParser = require("body-parser"),
+  mongoose = require("mongoose"),
+  app = express();
 
 mongoose.connect("mongodb://127.0.0.1:27017/Blog_App", {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true
 });
 app.set("view engine", "ejs");
 
 const blogSchema = new mongoose.Schema({
-    title: String,
-    image: String,
-    body: String,
-    created: {
-        type: Date,
-        default: Date.now
-    }
-})
+  title: String,
+  image: String,
+  body: String,
+  created: {
+    type: Date,
+    default: Date.now
+  }
+});
 
 let Blog = mongoose.model("Blog", blogSchema);
 
 app.use(express.static("public"));
-app.use(bodyParser.urlencoded({
+app.use(
+  bodyParser.urlencoded({
     extended: true
-}));
+  })
+);
 
 // Blog.create({
 //     title: "Test Blog",
@@ -34,20 +36,31 @@ app.use(bodyParser.urlencoded({
 // })
 
 app.get("/", (req, res) => {
-    res.redirect("/blogs");
-})
+  res.redirect("/blogs");
+});
 
 app.get("/blogs", (req, res) => {
-    Blog.find({}, (err, blogs) => {
-        if (err) console.log(err);
-        else {
-            res.render("index", {
-                blogs: blogs
-            });
-        }
-    })
-})
+  Blog.find({}, (err, blogs) => {
+    if (err) console.log(err);
+    else {
+      res.render("index", {
+        blogs: blogs
+      });
+    }
+  });
+});
+
+app.get("/blogs/new", (req, res) => {
+  res.render("new");
+});
+
+app.post("/blogs", (req, res) => {
+  Blog.create(req.body.blog, (err, newBlog) => {
+    if (err) res.render("new");
+    else res.redirect("/blogs");
+  });
+});
 
 app.listen(3000, () => {
-    console.log("Server listening on 3000");
-})
+  console.log("Server listening on 3000");
+});
