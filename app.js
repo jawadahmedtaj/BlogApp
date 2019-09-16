@@ -61,6 +61,13 @@ app.post("/blogs", (req, res) => {
   });
 });
 
+app.get("/blogs/:id", (req, res) => {
+  Blog.findById(req.params.id, (err, foundBlog) => {
+    if (err) res.redirect("/blogs");
+    else res.render("show", { blog: foundBlog });
+  });
+});
+
 app.listen(3000, () => {
   console.log("Server listening on 3000");
 });
