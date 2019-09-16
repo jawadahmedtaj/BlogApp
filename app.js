@@ -2,6 +2,7 @@ const express = require("express"),
   methodOverride = require("method-override"),
   bodyParser = require("body-parser"),
   mongoose = require("mongoose"),
+  expressSanitizer = require("express-sanitizer"),
   app = express();
 
 mongoose.connect("mongodb://127.0.0.1:27017/Blog_App", {
@@ -30,6 +31,7 @@ app.use(
   })
 );
 app.use(methodOverride("_method"));
+app.use(expressSanitizer());
 
 // Blog.create({
 //     title: "Test Blog",
@@ -57,6 +59,7 @@ app.get("/blogs/new", (req, res) => {
 });
 
 app.post("/blogs", (req, res) => {
+  req.body.blog.body = req.sanitize(req.body.blog.body);
   Blog.create(req.body.blog, (err, newBlog) => {
     if (err) res.render("new");
     else res.redirect("/blogs");
@@ -78,6 +81,7 @@ app.get("/blogs/:id/edit", (req, res) => {
 });
 
 app.put("/blogs/:id", (req, res) => {
+  req.body.blog.body = req.sanitize(req.body.blog.body);
   Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updatedBlog) => {
     if (err) res.redirect("/blogs/" + req.params.id + "/edit");
     else res.redirect("/blogs/" + req.params.id);
