@@ -1,4 +1,5 @@
 const express = require("express"),
+  methodOverride = require("method-override"),
   bodyParser = require("body-parser"),
   mongoose = require("mongoose"),
   app = express();
@@ -28,6 +29,7 @@ app.use(
     extended: true
   })
 );
+app.use(methodOverride("_method"));
 
 // Blog.create({
 //     title: "Test Blog",
@@ -65,6 +67,20 @@ app.get("/blogs/:id", (req, res) => {
   Blog.findById(req.params.id, (err, foundBlog) => {
     if (err) res.redirect("/blogs");
     else res.render("show", { blog: foundBlog });
+  });
+});
+
+app.get("/blogs/:id/edit", (req, res) => {
+  Blog.findById(req.params.id, (err, foundBlog) => {
+    if (err) res.redirect("/blogs");
+    else res.render("edit", { blog: foundBlog });
+  });
+});
+
+app.put("/blogs/:id", (req, res) => {
+  Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updatedBlog) => {
+    if (err) res.redirect("/blogs/" + req.params.id + "/edit");
+    else res.redirect("/blogs/" + req.params.id);
   });
 });
 
